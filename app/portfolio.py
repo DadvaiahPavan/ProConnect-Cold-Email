@@ -1,6 +1,30 @@
+import os
+import sys
+import sqlite3
+
+# Attempt to use pysqlite3 for newer SQLite version
+try:
+    import pysqlite3 as sqlite3
+except ImportError:
+    pass
+
+# Check SQLite version
+sqlite_version = sqlite3.sqlite_version_info
+print(f"SQLite Version: {sqlite3.sqlite_version}")
+
+if sqlite_version < (3, 35, 0):
+    print("Warning: SQLite version is lower than recommended")
+
 import pandas as pd
 import chromadb
 import uuid
+
+# Optional fallback for Chroma if SQLite is problematic
+try:
+    client = chromadb.Client()
+except Exception as e:
+    print(f"Chroma initialization error: {e}")
+    client = None
 
 
 class Portfolio:

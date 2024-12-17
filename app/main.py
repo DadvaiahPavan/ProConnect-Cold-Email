@@ -2,6 +2,11 @@ import streamlit as st
 import os
 import sys
 from dotenv import load_dotenv
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Add the parent directory to Python path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -13,38 +18,155 @@ try:
 except Exception as e:
     st.warning(f"Could not load .env file: {e}")
 
+# Set USER_AGENT to identify requests
+os.environ['USER_AGENT'] = 'ColdEmailGenerator/1.0'
+
 # Function to get API key with multiple fallback methods
 def get_groq_api_key():
     # Method 1: Environment variable
     api_key = os.getenv('GROQ_API_KEY')
     if api_key:
+        st.info("GROQ API Key loaded successfully from environment")
         return api_key
     
-    # Method 2: Check for .env file in project root
+    # Method 2: Streamlit secrets
     try:
-        load_dotenv(os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'))
-        api_key = os.getenv('GROQ_API_KEY')
-        if api_key:
-            return api_key
-    except Exception:
-        pass
-    
-    # Method 3: Streamlit secrets
-    try:
-        api_key = st.secrets.get('GROQ_API_KEY')
-        if api_key:
-            return api_key
-    except Exception:
-        pass
-    
-    # Method 4: Prompt user input
-    api_key = st.text_input("Enter your Groq API Key", type="password")
+        api_key = st.secrets["GROQ_API_KEY"]
+        st.info("GROQ API Key loaded from Streamlit secrets")
+        return api_key
+    except Exception as e:
+        st.error(f"Could not load GROQ API Key: {e}")
+        st.error("Please set GROQ_API_KEY in environment variables or Streamlit secrets")
+        return None
+
+# Add global error handling
+def global_exception_handler():
+    st.error("An unexpected error occurred. Please check your configuration and try again.")
+    st.error("Possible issues:")
+    st.error("1. Missing API keys")
+    st.error("2. Dependency conflicts")
+    st.error("3. Environment configuration problems")
+
+# Function to get API key with multiple fallback methods
+def get_groq_api_key():
+    # Method 1: Environment variable
+    api_key = os.getenv('GROQ_API_KEY')
     if api_key:
+        st.info("GROQ API Key loaded successfully from environment")
         return api_key
     
-    # If all methods fail
-    st.error("No Groq API Key found. Please set the GROQ_API_KEY environment variable or enter it manually.")
-    return None
+    # Method 2: Streamlit secrets
+    try:
+        api_key = st.secrets["GROQ_API_KEY"]
+        st.info("GROQ API Key loaded from Streamlit secrets")
+        return api_key
+    except Exception as e:
+        st.error(f"Could not load GROQ API Key: {e}")
+        st.error("Please set GROQ_API_KEY in environment variables or Streamlit secrets")
+        return None
+
+# Add global error handling
+def global_exception_handler():
+    st.error("An unexpected error occurred. Please check your configuration and try again.")
+    st.error("Possible issues:")
+    st.error("1. Missing API keys")
+    st.error("2. Dependency conflicts")
+    st.error("3. Environment configuration problems")
+
+# Modify create_streamlit_app to include error handling
+def create_streamlit_app():
+    try:
+        # Get Groq API Key
+        groq_api_key = get_groq_api_key()
+        
+        if not groq_api_key:
+            st.error("Cannot proceed without a valid Groq API Key")
+            return
+
+        st.title("🚀 Advanced Cold Email Generator")
+        
+        # Initialize advanced feature managers if available
+        if ADVANCED_FEATURES_AVAILABLE:
+            compliance_checker = EmailComplianceChecker()
+            performance_tracker = EmailPerformanceTracker()
+            integration_manager = IntegrationManager()
+        
+        # Sidebar for User Input
+        st.sidebar.subheader("Upload Your Resume")
+        uploaded_resume = st.sidebar.file_uploader("Choose a PDF or DOCX resume", type=["pdf", "docx"])
+        
+        # Personalization Inputs
+        recipient_name = st.sidebar.text_input("Recipient's Name", placeholder="John Doe")
+        company_name = st.sidebar.text_input("Company Name", placeholder="Tech Innovations Inc.")
+        sender_name = st.sidebar.text_input("Your Name", placeholder="Your Full Name")
+        
+        # Job Description Input with Enhanced Options
+        st.sidebar.subheader("Job Context")
+        job_description_input = st.sidebar.text_area("Job Description", placeholder="Paste job description or URL")
+        
+        # Email Customization Controls
+        st.sidebar.subheader("Email Customization")
+        tone_options = ["Professional", "Friendly", "Formal", "Casual"]
+        email_tone = st.sidebar.selectbox("Email Tone", tone_options)
+        
+        # Compliance and Privacy Toggle
+        if ADVANCED_FEATURES_AVAILABLE:
+            st.sidebar.subheader("Privacy & Compliance")
+            anonymize_data = st.sidebar.checkbox("Anonymize Sensitive Information")
+        
+        # Generate Email Button
+        generate_email = st.sidebar.button("Generate Personalized Email")
+        
+        if generate_email:
+            # Process Resume if uploaded
+            resume_text = ""
+            if uploaded_resume:
+                resume_text = extract_text_from_file(uploaded_resume)
+                if not resume_text:
+                    st.error("Could not extract text from the resume.")
+                    return
+            
+            # Get Job Description
+            job_description = get_job_description(job_description_input)
+            
+            # Compliance Check
+            if ADVANCED_FEATURES_AVAILABLE and anonymize_data:
+                resume_text = compliance_checker.anonymize_data(resume_text)
+                job_description = compliance_checker.anonymize_data(job_description)
+            
+            # Generate Email Text
+            email_text = generate_email_text(
+                resume_text, 
+                job_description, 
+                recipient_name, 
+                company_name, 
+                email_tone,
+                sender_name  # Pass sender name to the function
+            )
+            
+            # Email Appropriateness Check
+            if ADVANCED_FEATURES_AVAILABLE:
+                compliance_result = compliance_checker.check_appropriateness(email_text)
+                
+                if not compliance_result['is_appropriate']:
+                    st.warning("Generated email may contain inappropriate content.")
+            
+            # Display Generated Email
+            st.subheader("Generated Email")
+            st.write(email_text)
+            
+            # Performance Tracking
+            if ADVANCED_FEATURES_AVAILABLE:
+                performance_tracker.log_email_performance({
+                    'timestamp': pd.Timestamp.now(),
+                    'recipient': recipient_name,
+                    'company': company_name,
+                    'tone': email_tone,
+                    'compliance_score': compliance_result.get('confidence', 1.0)
+                })
+    except Exception as e:
+        global_exception_handler()
+        st.exception(e)
 
 from langchain_community.document_loaders import WebBaseLoader
 import PyPDF2
@@ -187,96 +309,6 @@ def generate_email_text(resume_text, job_description, recipient_name, company_na
     )
     
     return email
-
-def create_streamlit_app():
-    # Get Groq API Key
-    groq_api_key = get_groq_api_key()
-    
-    if not groq_api_key:
-        st.error("Cannot proceed without a valid Groq API Key")
-        return
-
-    st.title("🚀 Advanced Cold Email Generator")
-    
-    # Initialize advanced feature managers if available
-    if ADVANCED_FEATURES_AVAILABLE:
-        compliance_checker = EmailComplianceChecker()
-        performance_tracker = EmailPerformanceTracker()
-        integration_manager = IntegrationManager()
-    
-    # Sidebar for User Input
-    st.sidebar.subheader("Upload Your Resume")
-    uploaded_resume = st.sidebar.file_uploader("Choose a PDF or DOCX resume", type=["pdf", "docx"])
-    
-    # Personalization Inputs
-    recipient_name = st.sidebar.text_input("Recipient's Name", placeholder="John Doe")
-    company_name = st.sidebar.text_input("Company Name", placeholder="Tech Innovations Inc.")
-    sender_name = st.sidebar.text_input("Your Name", placeholder="Your Full Name")
-    
-    # Job Description Input with Enhanced Options
-    st.sidebar.subheader("Job Context")
-    job_description_input = st.sidebar.text_area("Job Description", placeholder="Paste job description or URL")
-    
-    # Email Customization Controls
-    st.sidebar.subheader("Email Customization")
-    tone_options = ["Professional", "Friendly", "Formal", "Casual"]
-    email_tone = st.sidebar.selectbox("Email Tone", tone_options)
-    
-    # Compliance and Privacy Toggle
-    if ADVANCED_FEATURES_AVAILABLE:
-        st.sidebar.subheader("Privacy & Compliance")
-        anonymize_data = st.sidebar.checkbox("Anonymize Sensitive Information")
-    
-    # Generate Email Button
-    generate_email = st.sidebar.button("Generate Personalized Email")
-    
-    if generate_email:
-        # Process Resume if uploaded
-        resume_text = ""
-        if uploaded_resume:
-            resume_text = extract_text_from_file(uploaded_resume)
-            if not resume_text:
-                st.error("Could not extract text from the resume.")
-                return
-        
-        # Get Job Description
-        job_description = get_job_description(job_description_input)
-        
-        # Compliance Check
-        if ADVANCED_FEATURES_AVAILABLE and anonymize_data:
-            resume_text = compliance_checker.anonymize_data(resume_text)
-            job_description = compliance_checker.anonymize_data(job_description)
-        
-        # Generate Email Text
-        email_text = generate_email_text(
-            resume_text, 
-            job_description, 
-            recipient_name, 
-            company_name, 
-            email_tone,
-            sender_name  # Pass sender name to the function
-        )
-        
-        # Email Appropriateness Check
-        if ADVANCED_FEATURES_AVAILABLE:
-            compliance_result = compliance_checker.check_appropriateness(email_text)
-            
-            if not compliance_result['is_appropriate']:
-                st.warning("Generated email may contain inappropriate content.")
-        
-        # Display Generated Email
-        st.subheader("Generated Email")
-        st.write(email_text)
-        
-        # Performance Tracking
-        if ADVANCED_FEATURES_AVAILABLE:
-            performance_tracker.log_email_performance({
-                'timestamp': pd.Timestamp.now(),
-                'recipient': recipient_name,
-                'company': company_name,
-                'tone': email_tone,
-                'compliance_score': compliance_result.get('confidence', 1.0)
-            })
 
 if __name__ == "__main__":
     st.set_page_config(layout="wide", page_title="Advanced Cold Email Generator", page_icon="📧")

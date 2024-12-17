@@ -1,7 +1,7 @@
 langchain
 groq
 streamlit
-chromadb
+chromadb==0.4.22
 pandas
 python-dotenv
 PyPDF2
@@ -25,5 +25,4 @@ python-magic==0.4.27
 anonymizedf
 langchain-groq
 pysqlite3-binary
-chromadb==0.4.22
-
+numpy<2.0.0  # Ensure compatibility with chromadb

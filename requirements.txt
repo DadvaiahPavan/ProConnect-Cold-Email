@@ -25,4 +25,5 @@ python-magic==0.4.27
 anonymizedf
 langchain-groq
 pysqlite3-binary
+chromadb==0.4.22
 

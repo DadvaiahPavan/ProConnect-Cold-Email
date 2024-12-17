@@ -67,6 +67,28 @@ class Portfolio:
         except Exception as e:
             logging.error(f"Error saving portfolio: {e}")
 
+    def load_portfolio(self, file_path="my_portfolio.csv"):
+        """
+        Load portfolio from a CSV file
+        
+        Args:
+            file_path (str): Path to the CSV file to load
+        
+        Returns:
+            DataFrame: Loaded portfolio projects
+        """
+        try:
+            self.df = pd.read_csv(file_path)
+            return self.df
+        except FileNotFoundError:
+            logging.warning(f"Portfolio file {file_path} not found. Creating an empty portfolio.")
+            self.df = pd.DataFrame(columns=['id', 'name', 'description', 'skills', 'link'])
+            return self.df
+        except Exception as e:
+            logging.error(f"Error loading portfolio: {e}")
+            self.df = pd.DataFrame(columns=['id', 'name', 'description', 'skills', 'link'])
+            return self.df
+
     def __len__(self):
         """
         Get number of projects in portfolio

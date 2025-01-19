@@ -92,31 +92,31 @@ def create_streamlit_app():
             performance_tracker = EmailPerformanceTracker()
             integration_manager = IntegrationManager()
         
-        # User Input
-        st.subheader("Upload Your Resume")
-        uploaded_resume = st.file_uploader("Choose a PDF or DOCX resume", type=["pdf", "docx"])
-        
-        # Personalization Inputs
-        recipient_name = st.text_input("Recipient's Name", placeholder="John Doe")
-        company_name = st.text_input("Company Name", placeholder="Tech Innovations Inc.")
-        sender_name = st.text_input("Your Name", placeholder="Your Full Name")
-        
-        # Job Description Input with Enhanced Options
-        st.subheader("Job Context")
-        job_description_input = st.text_area("Job Description", placeholder="Paste job description or URL")
-        
-        # Email Customization Controls
-        st.subheader("Email Customization")
-        tone_options = ["Professional", "Friendly", "Formal", "Casual"]
-        email_tone = st.selectbox("Email Tone", tone_options)
-        
-        # Compliance and Privacy Toggle
-        if ADVANCED_FEATURES_AVAILABLE:
-            st.subheader("Privacy & Compliance")
-            anonymize_data = st.checkbox("Anonymize Sensitive Information")
-        
-        # Generate Email Button
-        generate_email = st.button("Generate Personalized Email")
+        # Create a sidebar layout
+        with st.sidebar:
+            st.write("### ProConnect: AI-Powered Cold Email Creator")
+            
+            # Upload Your Resume
+            uploaded_resume = st.file_uploader("Choose a PDF or DOCX resume", type=["pdf", "docx"])
+            
+            # Personalization Inputs
+            recipient_name = st.text_input("Recipient's Name", placeholder="John Doe")
+            company_name = st.text_input("Company Name", placeholder="Tech Innovations Inc.")
+            sender_name = st.text_input("Your Name", placeholder="Your Full Name")
+            
+            # Job Description Input with Enhanced Options
+            job_description_input = st.text_area("Job Description", placeholder="Paste job description or URL")
+            
+            # Email Customization Controls
+            tone_options = ["Professional", "Friendly", "Formal", "Casual"]
+            email_tone = st.selectbox("Email Tone", tone_options)
+            
+            # Compliance and Privacy Toggle
+            if ADVANCED_FEATURES_AVAILABLE:
+                anonymize_data = st.checkbox("Anonymize Sensitive Information")
+            
+            # Generate Email Button
+            generate_email = st.button("Generate Personalized Email")
         
         if generate_email:
             # Process Resume if uploaded

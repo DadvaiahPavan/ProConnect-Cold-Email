@@ -20,9 +20,9 @@ plotly
 linkedin-api
 slack-sdk
 email-validator
-python-magic==0.4.27
+python-magic
 anonymizedf
 langchain-groq
-chromadb==0.4.22
-numpy<2.0.0  # Ensure compatibility with chromadb
+chromadb
+numpy # Ensure compatibility with chromadb
 spacy

@@ -2,7 +2,7 @@
 
 A sophisticated application that leverages AI to generate personalized and effective cold emails for job applications and professional networking. Built with Streamlit and powered by Groq's LLM API.
 
-![Cold Email Generator Interface](https://i.ibb.co/18cw3PG/Screenshot-2024-12-16-204621.png)
+
 
 ## 🌟 Features
 

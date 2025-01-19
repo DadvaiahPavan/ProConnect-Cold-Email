@@ -14,11 +14,17 @@ import uuid
 
 class Portfolio:
     def __init__(self, file_path="my_portfolio.csv"):
+        """
+        Initialize portfolio with required columns
+        """
         try:
-            self.df = pd.read_csv(file_path) if pd.os.path.exists(file_path) else pd.DataFrame()
+            if pd.os.path.exists(file_path):
+                self.df = pd.read_csv(file_path)
+            else:
+                self.df = pd.DataFrame(columns=['id', 'name', 'description', 'skills', 'link'])
         except Exception as e:
             logging.error(f"Error initializing portfolio: {e}")
-            self.df = pd.DataFrame()
+            self.df = pd.DataFrame(columns=['id', 'name', 'description', 'skills', 'link'])
 
     def add_project(self, project_name, description, skills, link=None):
         """
@@ -54,6 +60,29 @@ class Portfolio:
             DataFrame: Projects matching the skill
         """
         return self.df[self.df['skills'].str.contains(skill, case=False, na=False)]
+
+    def query_links(self, skills):
+        """
+        Retrieve project links that match the specified skills.
+        
+        Args:
+            skills (list): List of skills to search for.
+        
+        Returns:
+            list: Project links that match the skills.
+        """
+        if self.df.empty or 'skills' not in self.df.columns:
+            return []
+            
+        links = []
+        for _, row in self.df.iterrows():
+            if pd.isna(row['skills']) or pd.isna(row['link']):
+                continue
+            row_skills = str(row['skills']).lower().split(', ')
+            if any(skill.lower() in row_skills for skill in skills):
+                if row['link'] and not pd.isna(row['link']):
+                    links.append(row['link'])
+        return links
 
     def save(self, file_path="my_portfolio.csv"):
         """

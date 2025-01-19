@@ -3,6 +3,7 @@ from langchain_groq import ChatGroq
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.exceptions import OutputParserException
+import logging
 
 class Chain:
     def __init__(self):
@@ -26,30 +27,20 @@ class Chain:
             input_variables=["context"],
             template="""
             From the following context, extract a list of technical skills, 
-            programming languages, tools, and technologies:
+            programming languages, tools, and technologies. Return them as a comma-separated list:
             
             Context: {context}
             
-            Return a JSON list of skills, focusing on technical and professional skills.
-            If no clear skills are found, return an empty list.
-            """
+            Skills:"""
         )
         
-        skill_chain = skill_prompt | self.llm | JsonOutputParser()
-        
         try:
-            skills = skill_chain.invoke({"context": context})
-            
-            # Validate and clean skills
-            if not isinstance(skills, list):
-                return []
-            
-            # Remove any non-string or empty skills
-            skills = [str(skill).strip() for skill in skills if skill and isinstance(skill, (str, int, float))]
-            
-            return skills
+            skills_text = self.llm.invoke(skill_prompt.format(context=context)).content
+            # Convert the skills text into a list, clean up any whitespace
+            skills_list = [skill.strip() for skill in skills_text.split(',') if skill.strip()]
+            return skills_list
         except Exception as e:
-            print(f"Error extracting skills: {e}")
+            logging.error(f"Error extracting skills: {e}")
             return []
 
     def write_personalized_mail(self, context, job_description, links, tone='Professional', sender_name=None):

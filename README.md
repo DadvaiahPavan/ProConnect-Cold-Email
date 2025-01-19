@@ -1,4 +1,4 @@
-# AI-Powered Cold Email Generator 📧
+# ProConnectX: AI-Powered Cold Email Creator 📧
 
 A sophisticated application that leverages AI to generate personalized and effective cold emails for job applications and professional networking. Built with Streamlit and powered by Groq's LLM API.
 
@@ -27,20 +27,20 @@ A sophisticated application that leverages AI to generate personalized and effec
 ### Installation
 
 1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/project-genai-cold-email-generator.git
-cd project-genai-cold-email-generator
-```
+   ```bash
+   git clone https://github.com/DadvaiahPavan/ProConnectX.git 
+   cd ProConnectX
+   ```
 
 2. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
+   ```bash
+   pip install -r requirements.txt
+   ```
 
 3. Create a `.env` file in the app directory:
-```bash
-GROQ_API_KEY=your_groq_api_key_here
-```
+   ```bash
+   GROQ_API_KEY=your_groq_api_key_here
+   ```
 
 ### Running the Application
 

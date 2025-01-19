@@ -9,6 +9,7 @@ import torch
 from transformers import pipeline
 import re
 import email_validator
+import spacy
 
 # Optional import with fallback
 try:

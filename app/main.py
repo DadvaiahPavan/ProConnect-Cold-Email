@@ -21,12 +21,14 @@ except Exception as e:
 # Set USER_AGENT to identify requests
 os.environ['USER_AGENT'] = 'ColdEmailGenerator/1.0'
 
+# Set GROQ API key in environment variables
+os.environ['GROQ_API_KEY'] = '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'
+
 # Function to get API key with multiple fallback methods
 def get_groq_api_key():
     # Method 1: Environment variable
     api_key = os.getenv('GROQ_API_KEY')
     if api_key:
-        st.info("")
         return api_key
     
     # Method 2: Streamlit secrets
@@ -52,7 +54,6 @@ def get_groq_api_key():
     # Method 1: Environment variable
     api_key = os.getenv('GROQ_API_KEY')
     if api_key:
-        st.info("GROQ API Key loaded successfully from environment")
         return api_key
     
     # Method 2: Streamlit secrets
@@ -83,7 +84,7 @@ def create_streamlit_app():
             st.error("Cannot proceed without a valid Groq API Key")
             return
 
-        st.title("🚀 Advanced Cold Email Generator")
+        st.title("🚀 ProConnect: AI-Powered Cold Email Creator")
         
         # Initialize advanced feature managers if available
         if ADVANCED_FEATURES_AVAILABLE:
@@ -91,31 +92,31 @@ def create_streamlit_app():
             performance_tracker = EmailPerformanceTracker()
             integration_manager = IntegrationManager()
         
-        # Sidebar for User Input
-        st.sidebar.subheader("Upload Your Resume")
-        uploaded_resume = st.sidebar.file_uploader("Choose a PDF or DOCX resume", type=["pdf", "docx"])
+        # User Input
+        st.subheader("Upload Your Resume")
+        uploaded_resume = st.file_uploader("Choose a PDF or DOCX resume", type=["pdf", "docx"])
         
         # Personalization Inputs
-        recipient_name = st.sidebar.text_input("Recipient's Name", placeholder="John Doe")
-        company_name = st.sidebar.text_input("Company Name", placeholder="Tech Innovations Inc.")
-        sender_name = st.sidebar.text_input("Your Name", placeholder="Your Full Name")
+        recipient_name = st.text_input("Recipient's Name", placeholder="John Doe")
+        company_name = st.text_input("Company Name", placeholder="Tech Innovations Inc.")
+        sender_name = st.text_input("Your Name", placeholder="Your Full Name")
         
         # Job Description Input with Enhanced Options
-        st.sidebar.subheader("Job Context")
-        job_description_input = st.sidebar.text_area("Job Description", placeholder="Paste job description or URL")
+        st.subheader("Job Context")
+        job_description_input = st.text_area("Job Description", placeholder="Paste job description or URL")
         
         # Email Customization Controls
-        st.sidebar.subheader("Email Customization")
+        st.subheader("Email Customization")
         tone_options = ["Professional", "Friendly", "Formal", "Casual"]
-        email_tone = st.sidebar.selectbox("Email Tone", tone_options)
+        email_tone = st.selectbox("Email Tone", tone_options)
         
         # Compliance and Privacy Toggle
         if ADVANCED_FEATURES_AVAILABLE:
-            st.sidebar.subheader("Privacy & Compliance")
-            anonymize_data = st.sidebar.checkbox("Anonymize Sensitive Information")
+            st.subheader("Privacy & Compliance")
+            anonymize_data = st.checkbox("Anonymize Sensitive Information")
         
         # Generate Email Button
-        generate_email = st.sidebar.button("Generate Personalized Email")
+        generate_email = st.button("Generate Personalized Email")
         
         if generate_email:
             # Process Resume if uploaded
@@ -245,7 +246,7 @@ def extract_text_from_file(uploaded_file):
         if ADVANCED_FEATURES_AVAILABLE:
             parser = AdvancedResumeParser()
             skills = parser.extract_skills(text)
-            st.sidebar.write("Extracted Skills:", skills)
+            st.write("Extracted Skills:", skills)
         
         return text
     
@@ -293,7 +294,7 @@ def generate_email_text(resume_text, job_description, recipient_name, company_na
     # Portfolio Preparation
     portfolio.load_portfolio()
     
-    # Extract Skills
+    # Extract skills using the chain
     skills = chain.extract_skills(full_context)
     
     # Find Relevant Portfolio Links
@@ -311,5 +312,5 @@ def generate_email_text(resume_text, job_description, recipient_name, company_na
     return email
 
 if __name__ == "__main__":
-    st.set_page_config(layout="wide", page_title="Advanced Cold Email Generator", page_icon="📧")
+    st.set_page_config(layout="wide", page_title="ProConnect: AI-Powered Cold Email Creator", page_icon="📧")
     create_streamlit_app()

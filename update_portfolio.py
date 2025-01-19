@@ -46,7 +46,7 @@ def scrape_github_repos(username):
     return repos
 
 def update_portfolio_csv(repos):
-    csv_path = 'c:/Users/pavan/OneDrive/Desktop/test/project-genai-cold-email-generator/my_portfolio.csv'
+    csv_path = 'c:/Users/pavan/OneDrive/Desktop/test/ProConnect: AI-Powered Cold Email Creator/my_portfolio.csv'
     
     # Read existing CSV
     with open(csv_path, 'r', newline='', encoding='utf-8') as file:
